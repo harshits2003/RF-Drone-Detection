@@ -7,4 +7,5 @@ Steps to run:
 4. Toggle switch to simulate drone detection
 
 Switch OFF  → Area Clear
+
 Switch ON   → Drone Alert + Buzzer
