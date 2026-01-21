@@ -198,3 +198,16 @@ plt.show()
 print("Saved decision boundary plot.")
 # Calibrated the detection threshold using background RF statistics and evaluate false alarms versus detections. This allows us to tune sensitivity without decoding any protocol.
 
+#----- SESSION 4: EMBEDDED MAPPING OOUTPUT-------
+
+# Final detection flag (what ESP32 would receive)
+detection_flag = int(detections > (0.7 * len(mean_energy_drone)))
+
+print("\n--- Embedded Interface Output ---")
+print("Detection Flag (0 = Clear, 1 = Drone):", detection_flag)
+
+if detection_flag:
+    print("ESP32 ACTION: Activate buzzer + show 'DRONE ALERT'")
+else:
+    print("ESP32 ACTION: System idle, area clear")
+# The Python pipeline outputs a binary detection flag, which represents the output of the RF intelligence layer. This is consumed by the ESP32 for real-time alerting
