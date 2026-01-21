@@ -124,3 +124,77 @@ plt.show()
 print("Feature-space plot saved to results/plots/feature_space_separation.png")
 # This plot shows Detectibility; Although raw RF activity looks noisy, the extracted features form separable clusters, which enables reliable detection using simple classifiers.
 
+#----SESSION 3: THRESHOLD CALIBRATION & DECISION BOUNDARY DESIGN-------
+
+# -----------------------------
+# Threshold based on background RF
+# -----------------------------
+
+mean_energy_no_drone = no_drone_data[:, 0]
+mean_energy_drone = drone_data[:, 0]
+
+# Threshold: midway between background mean and drone mean
+threshold_energy = 0.5 * (
+    np.mean(mean_energy_no_drone) + np.mean(mean_energy_drone)
+)
+
+print("\n--- Threshold Calibration ---")
+print("Mean energy (No Drone):", np.mean(mean_energy_no_drone))
+print("Mean energy (Drone)   :", np.mean(mean_energy_drone))
+print("Chosen energy threshold:", threshold_energy)
+
+# -----------------------------
+# Detection performance
+# -----------------------------
+
+false_alarms = np.sum(mean_energy_no_drone > threshold_energy)
+detections = np.sum(mean_energy_drone > threshold_energy)
+
+print("\n--- Detection Performance ---")
+print("Total No-Drone samples :", len(mean_energy_no_drone))
+print("False alarms           :", false_alarms)
+
+print("Total Drone samples    :", len(mean_energy_drone))
+print("Correct detections     :", detections)
+
+# -----------------------------
+# Decision boundary visualization
+# -----------------------------
+
+plt.figure(figsize=(6, 6))
+
+plt.scatter(
+    no_drone_data[:, 0],
+    no_drone_data[:, 1],
+    label="No Drone",
+    alpha=0.7
+)
+
+plt.scatter(
+    drone_data[:, 0],
+    drone_data[:, 1],
+    label="Drone Present",
+    alpha=0.7
+)
+
+# Decision boundary (vertical line)
+plt.axvline(
+    threshold_energy,
+    color="red",
+    linestyle="--",
+    label="Decision Threshold"
+)
+
+plt.xlabel("Mean Energy")
+plt.ylabel("Variance")
+plt.title("Decision Boundary for Drone Detection")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+
+plt.savefig("drone_rf_detection/results/plots/decision_boundary.png", dpi=300)
+plt.show()
+
+print("Saved decision boundary plot.")
+# Calibrated the detection threshold using background RF statistics and evaluate false alarms versus detections. This allows us to tune sensitivity without decoding any protocol.
+
