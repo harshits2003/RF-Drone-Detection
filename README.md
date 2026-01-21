@@ -15,4 +15,4 @@ Session 3: Threshold calibration and visible decision boundary (Designing the De
 
 Session 4: Embedded Mapping (PC -> ESP32 logic)
 
-Session 5: Hardware abstraction layer
+Session 5: Hardware abstraction layer (Proteus Simulation)
