@@ -1,8 +1,7 @@
 #----SESSION 1: RF ACTIVITY SIMULATION-------
-
 import numpy as np
 import matplotlib.pyplot as plt
-
+np.random.seed(42)
 # -----------------------------
 # Simulation parameters
 # -----------------------------
@@ -31,6 +30,8 @@ plt.ylabel("RF Activity Level")
 plt.title("Simulated RF Activity")
 plt.legend()
 plt.tight_layout()
+# Save plot
+plt.savefig("drone_rf_detection/results/plots/simulated_rf_activity.png", dpi=300)
 plt.show()
 
 # -----------------------------
@@ -66,4 +67,60 @@ if (drone_features[0] > ENERGY_THRESHOLD and
 else:
     print("✅ AREA CLEAR")
 
+#----- SESSION 2: FEATURE-SPACE VISUALIZATION -------
+
+# -----------------------------
+# Multiple-run simulation
+# -----------------------------
+
+NUM_SAMPLES = 50
+
+no_drone_data = []
+drone_data = []
+
+for _ in range(NUM_SAMPLES):
+
+    # No-drone signal
+    noise_only = np.random.normal(0, 0.4, len(t))
+    
+    # Drone signal
+    burst_mask = (np.random.rand(len(t)) > 0.9).astype(int)
+    bursts = 2.5 * burst_mask * np.sin(2 * np.pi * 40 * t)
+    drone_signal = noise_only + bursts
+
+    # Extract features
+    no_drone_data.append(extract_features(noise_only))
+    drone_data.append(extract_features(drone_signal))
+
+# Convert to numpy arrays
+no_drone_data = np.array(no_drone_data)
+drone_data = np.array(drone_data)
+
+# Feature-Space scatter plot
+plt.figure(figsize=(6, 6))
+
+plt.scatter(
+    no_drone_data[:, 0],
+    no_drone_data[:, 1],
+    label="No Drone",
+    alpha=0.7
+)
+
+plt.scatter(
+    drone_data[:, 0],
+    drone_data[:, 1],
+    label="Drone Present",
+    alpha=0.7
+)
+
+plt.xlabel("Mean Energy")
+plt.ylabel("Variance")
+plt.title("Feature Space: Drone vs No Drone")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("drone_rf_detection/results/plots/feature_space_separation.png", dpi=300)
+plt.show()
+print("Feature-space plot saved to results/plots/feature_space_separation.png")
+# This plot shows Detectibility; Although raw RF activity looks noisy, the extracted features form separable clusters, which enables reliable detection using simple classifiers.
 
